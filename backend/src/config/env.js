@@ -17,6 +17,7 @@ module.exports = {
     user: process.env.DB_USER,
     pass: process.env.DB_PASS,
     name: process.env.DB_NAME,
+    sslCaPath: process.env.DB_SSL_CA, // path to a downloaded CA cert; leave unset for local MySQL
   },
   bakong: {
     accountId: process.env.BAKONG_ACCOUNT_ID, // e.g. "yourname@aclb" — from your bank's Bakong profile

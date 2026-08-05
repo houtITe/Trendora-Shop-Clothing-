@@ -102,6 +102,8 @@
 }
 
 .tr-perks {
+  margin-top: -120px;
+    margin-bottom: 130px;
   position: relative;
   left: 50%;
   transform: translate(-50%, 50%);
@@ -353,6 +355,7 @@
 }
 @media (max-width: 760px) {
   .tr-perks {
+    margin-bottom: 40px;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--tr-space-3);
     padding: var(--tr-space-4);
@@ -366,12 +369,17 @@
   padding-top: 50px;
   }
   .tr-perks {
+    margin-top: -80px;
+    margin-bottom: 90px;
     grid-template-columns: 1fr 1fr;
     transform: translate(-50%, 30%);
     padding: var(--tr-space-3);
   }}
 @media (max-width: 420px) {
-  .tr-perks { grid-template-columns: 1fr; }
+  .tr-perks {
+    margin-top: -120px;
+    margin-bottom: 130px;
+     grid-template-columns: 1fr; }
   .tr-why__images { grid-template-columns: 1fr; }
 
   
