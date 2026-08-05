@@ -1,0 +1,107 @@
+/* Payment Methods */
+.tr-payment-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  padding: 0;
+}
+
+.tr-payment-method {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #f9f9f9;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.tr-payment-method:hover {
+  border-color: #d1d5db;
+  background: #f3f4f6;
+}
+
+.tr-payment-method.is-active {
+  border-color: var(--tr-tan, #f4a261);
+  background: #fef9f0;
+  box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.15);
+  animation: trPaymentPop 0.3s ease;
+}
+
+@keyframes trPaymentPop {
+  0% { transform: scale(0.96); }
+  55% { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+
+.tr-payment-method--split { grid-column: span 2; }
+
+.tr-payment-method__icon {
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 26px;
+}
+.tr-payment-method__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #000000;
+}
+
+.tr-payment-method.is-active .tr-payment-method__icon {
+  color: green;
+}
+
+
+.tr-payment-method__check {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: red;
+  color: #fff;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tr-payment-methods {
+    grid-template-columns: 1fr 1fr;
+  }
+  .tr-payment-method {
+    padding: 12px 14px;
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+  .tr-payment-method__check {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+}

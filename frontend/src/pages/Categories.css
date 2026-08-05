@@ -1,0 +1,15 @@
+.tr-categories { padding: 40px 24px; }
+.tr-categories__sub { color: var(--tr-gray); margin-bottom: 24px; }
+.tr-categories__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.tr-categories__card { position: relative; border-radius: var(--tr-radius); overflow: hidden; display: block; aspect-ratio: 4/5; }
+.tr-categories__card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.tr-categories__card:hover img { transform: scale(1.05); }
+.tr-categories__overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(transparent 40%, rgba(0,0,0,0.6));
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 16px; color: #fff;
+}
+.tr-categories__overlay strong { font-size: 1.05rem; }
+.tr-categories__overlay span { font-size: 0.8rem; opacity: 0.85; }
+@media (max-width: 900px) { .tr-categories__grid { grid-template-columns: repeat(2, 1fr); } }

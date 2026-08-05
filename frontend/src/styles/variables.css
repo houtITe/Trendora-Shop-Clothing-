@@ -1,0 +1,63 @@
+/* =========================================================
+   Trendora Design Tokens
+   Colors extracted from the approved UI design.
+   Keep all layout/colors consistent with the original design.
+========================================================= */
+:root {
+  /* Brand palette */
+  --tr-tan: #c9986b;          /* buttons, price highlights, "ORA" in logo */
+  --tr-tan-dark: #b98450;
+  --tr-tan-soft: #f3e5d6;
+  --tr-pink: #f2c7c2;         /* hero background gradient */
+  --tr-pink-light: #f7ded9;
+  --tr-cream: #faf5ef;        /* section backgrounds */
+  --tr-cream-2: #f1e7dc;      /* promo banners */
+  --tr-dark: #171412;         /* headings / near-black */
+  --tr-black: #0d0d0d;        /* footer background */
+  --tr-gray: #6b6b6b;         /* body copy */
+  --tr-gray-light: #f4f2ef;   /* navbar background */
+  --tr-border: #e2ded8;
+  --tr-discount: #ef4f47;     /* discount / off badges */
+  --tr-success: #2e7d32;
+
+  --tr-font-body: 'Poppins', system-ui, sans-serif;
+  --tr-font-logo: 'Playfair Display', serif;
+
+  /* Type scale */
+  --tr-text-xs: 0.75rem;
+  --tr-text-sm: 0.875rem;
+  --tr-text-base: 1rem;
+  --tr-text-lg: 1.125rem;
+  --tr-text-xl: 1.375rem;
+  --tr-text-2xl: clamp(1.5rem, 2.6vw, 2rem);
+  --tr-text-3xl: clamp(2rem, 4.4vw, 3.25rem);
+
+  /* Spacing scale */
+  --tr-space-1: 4px;
+  --tr-space-2: 8px;
+  --tr-space-3: 12px;
+  --tr-space-4: 16px;
+  --tr-space-5: 24px;
+  --tr-space-6: 32px;
+  --tr-space-7: 48px;
+  --tr-space-8: 64px;
+  --tr-space-9: 88px;
+
+  /* Rhythm used between navbar / sections / footer */
+  --tr-page-top: clamp(32px, 5vw, 56px);
+  --tr-page-bottom: clamp(56px, 8vw, 96px);
+  --tr-section-gap: clamp(48px, 6vw, 80px);
+
+  --tr-radius-sm: 8px;
+  --tr-radius: 12px;
+  --tr-radius-lg: 18px;
+  --tr-radius-pill: 999px;
+
+  --tr-shadow-xs: 0 1px 2px rgba(23, 20, 18, 0.06);
+  --tr-shadow: 0 4px 20px rgba(23, 20, 18, 0.06);
+  --tr-shadow-md: 0 10px 30px -12px rgba(23, 20, 18, 0.18);
+  --tr-shadow-lg: 0 24px 60px -20px rgba(23, 20, 18, 0.24);
+
+  --tr-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --tr-transition: 0.28s var(--tr-ease);
+}

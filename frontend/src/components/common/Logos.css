@@ -1,0 +1,93 @@
+/* Shared logo + marquee styling */
+.tr-logo__img {
+  display: block;
+  object-fit: contain;
+  opacity: 0.72;
+  filter: grayscale(1);
+  transition: opacity var(--tr-transition), filter var(--tr-transition), transform var(--tr-transition);
+}
+.tr-logo__img:hover {
+  opacity: 1;
+  filter: grayscale(0);
+  transform: scale(1.06);
+}
+.tr-logo__fallback {
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tr-dark);
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+/* ---------- Infinite marquee ---------- */
+.tr-marquee {
+  overflow: hidden;
+  position: relative;
+  padding: var(--tr-space-5) 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.tr-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: trMarquee linear infinite;
+}
+.tr-marquee:hover .tr-marquee__track,
+.tr-marquee:focus-within .tr-marquee__track { animation-play-state: paused; }
+
+.tr-marquee__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: clamp(120px, 14vw, 190px);
+  height: 56px;
+  padding: 0 var(--tr-space-5);
+}
+
+@keyframes trMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Same track, opposite direction — used for the second testimonials row so
+   the two rows visibly drift past each other instead of moving in lockstep. */
+@keyframes trMarqueeReverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.tr-marquee__track--reverse { animation-name: trMarqueeReverse; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-marquee__track { animation: none; flex-wrap: wrap; justify-content: center; width: 100%; }
+}
+
+/* ---------- Payment logos ---------- */
+.tr-payments {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tr-space-3);
+}
+.tr-payments__item {
+  display: grid;
+  place-items: center;
+  min-width: 56px;
+  height: 34px;
+  padding: 0 12px;
+  background: #fff;
+  border-radius: var(--tr-radius-sm);
+  box-shadow: var(--tr-shadow-xs);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+.tr-payments__item:hover {
+  transform: translateY(-4px) scale(1.08) rotate(-2deg);
+  box-shadow: 0 8px 20px rgba(244, 162, 97, 0.35), 0 0 0 2px rgba(244, 162, 97, 0.45);
+}
+.tr-payments__item:nth-child(even):hover {
+  transform: translateY(-4px) scale(1.08) rotate(2deg);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+.tr-payments__item .tr-logo__img { opacity: 1; filter: none; }
+.tr-payments__item .tr-logo__fallback { opacity: 1; font-size: 0.65rem; }

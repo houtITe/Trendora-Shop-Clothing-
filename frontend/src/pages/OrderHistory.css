@@ -1,0 +1,33 @@
+.tr-orders { padding: 40px 24px; }
+.tr-orders__empty { color: var(--tr-gray); text-align: center; padding: 60px 0; }
+.tr-orders__list { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+.tr-orders__card {
+  background: var(--tr-cream);
+  border-radius: var(--tr-radius);
+  padding: 22px;
+  margin: 20px;
+  box-shadow: var(--tr-shadow-xs);
+  transition: transform var(--tr-transition), box-shadow var(--tr-transition);
+}
+.tr-orders__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--tr-shadow-md);
+}
+.tr-orders__head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.tr-orders__head p { color: var(--tr-gray); font-size: 0.8rem; margin: 2px 0 0; }
+.tr-orders__new-tag { background: var(--tr-tan); color: #fff; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+.tr-orders__status { font-size: 0.78rem; font-weight: 600; padding: 4px 12px; border-radius: 14px; }
+.tr-orders__status--processing { background: #fff3cd; color: #8a6300; }
+.tr-orders__status--pending { background: #fff3cd; color: #8a6300; }
+.tr-orders__status--shipped { background: #d6e4ff; color: #1d4e9b; }
+.tr-orders__status--completed, .tr-orders__status--delivered { background: #e6f4ea; color: #2e7d32; }
+.tr-orders__status--cancelled { background: #fdecea; color: #c0392b; }
+
+.tr-orders__items { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--tr-border); padding-top: 12px; }
+.tr-orders__item { display: flex; align-items: center; gap: 12px; }
+.tr-orders__item img { width: 46px; height: 46px; object-fit: cover; border-radius: 6px; }
+.tr-orders__item div { display: flex; flex-direction: column; flex: 1; }
+.tr-orders__item span { font-size: 0.78rem; color: var(--tr-gray); }
+.tr-orders__item-total { font-weight: 600; }
+
+.tr-orders__foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--tr-border); margin-top: 14px; padding-top: 12px; font-size: 0.88rem; }

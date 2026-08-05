@@ -1,0 +1,9 @@
+.tr-pagination { display: flex; gap: 8px; justify-content: center; margin: 30px 0; }
+.tr-pagination button {
+  width: 34px; height: 34px;
+  border: 1px solid var(--tr-border);
+  background: #fff;
+  border-radius: 8px;
+}
+.tr-pagination button.active { background: var(--tr-tan); color: #fff; border-color: var(--tr-tan); }
+.tr-pagination button:disabled { opacity: 0.4; }

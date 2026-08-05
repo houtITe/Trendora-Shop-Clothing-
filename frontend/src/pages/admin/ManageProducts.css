@@ -1,0 +1,97 @@
+/* Container for horizontal scroll */
+.products-table-container {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 850px; /* force scroll on small screens */
+  font-size: 0.9rem;
+}
+
+.products-table thead th {
+  background: #f8fafc;
+  color: #1e293b;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.products-table tbody td {
+  padding: 10px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+/* Column widths */
+.products-table .col-image { width: 70px; text-align: center; }
+.products-table .col-name   { width: 180px; max-width: 180px; white-space: normal; word-break: break-word; }
+.products-table .col-price  { width: 80px; text-align: right; }
+.products-table .col-discount { width: 60px; text-align: center; }
+.products-table .col-stock  { width: 70px; text-align: center; }
+.products-table .col-category { width: 100px; }
+.products-table .col-brand  { width: 100px; }
+.products-table .col-actions { width: 130px; text-align: center; }
+
+/* Image thumbnail */
+.product-thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Action buttons */
+.products-table .col-actions button {
+  padding: 4px 10px;
+  margin: 0 4px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.products-table .col-actions button:first-child {
+  background: #f4a261;
+  color: #1a1a2e;
+}
+.products-table .col-actions button:first-child:hover {
+  background: #e08f4a;
+}
+.products-table .col-actions button.danger {
+  background: #ef4444;
+  color: #fff;
+}
+.products-table .col-actions button.danger:hover {
+  background: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .products-table .col-actions {
+    white-space: nowrap;
+  }
+}
+.tr-manage-products__hint { font-weight: 400; color: #6b7280; font-size: 0.78rem; }
+.tr-manage-products__checkgrid {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px;
+}
+.tr-manage-products__check {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px;
+  font-size: 0.85rem; cursor: pointer; user-select: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tr-manage-products__check:hover { border-color: #f4a261; }
+.tr-manage-products__check input { accent-color: #f4a261; }

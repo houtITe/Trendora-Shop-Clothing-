@@ -1,0 +1,8 @@
+.tr-modal { position: fixed; inset: 0; background: rgba(15,12,10,0.5); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.tr-modal__card { background: #fff; border-radius: var(--tr-radius-lg); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+.tr-modal__head { display: flex; justify-content: space-between; align-items: center; padding: 18px 22px; border-bottom: 1px solid var(--tr-border); }
+.tr-modal__head h5 { font-weight: 700; margin: 0; }
+.tr-modal__head button { border: none; background: var(--tr-cream); width: 30px; height: 30px; border-radius: 50%; font-size: 1.1rem; }
+.tr-modal__body { padding: 20px 22px; }
+.tr-modal__body label { display: block; font-size: 0.85rem; font-weight: 500; margin: 10px 0 6px; }
+.tr-modal__actions { display: flex; gap: 10px; margin-top: 20px; }

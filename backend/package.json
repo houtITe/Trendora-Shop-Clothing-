@@ -1,0 +1,32 @@
+{
+  "name": "trendora-backend",
+  "version": "1.0.0",
+  "description": "Trendora e-commerce backend (Express + JWT + MySQL)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "db:init": "node src/db/init.js",
+    "db:seed": "node src/db/seed.js"
+  },
+  "dependencies": {
+    "bakong-khqr": "^1.0.20",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.23.2",
+    "qrcode": "^1.5.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

@@ -1,0 +1,35 @@
+.tr-cart { padding: 40px 24px; }
+.tr-cart__empty { text-align: center; padding: 60px 0; color: var(--tr-gray); }
+.tr-cart__empty p { margin-bottom: 16px; }
+.tr-cart__layout { display: grid; grid-template-columns: 1fr 340px; gap: 26px; margin-top: 24px; }
+.tr-cart__items { display: flex; flex-direction: column; gap: 14px; }
+.tr-cart__row {
+  display: grid;
+  grid-template-columns: 70px 1fr auto auto auto;
+  align-items: center;
+  gap: 16px;
+  background: var(--tr-cream);
+  border-radius: var(--tr-radius);
+  padding: 12px 16px;
+}
+.tr-cart__row img { width: 70px; height: 70px; object-fit: cover; border-radius: 8px; }
+.tr-cart__row-info { display: flex; flex-direction: column; gap: 2px; }
+.tr-cart__row-info span { font-size: 0.8rem; color: var(--tr-gray); }
+.tr-cart__unit-price { font-size: 0.78rem; }
+.tr-cart__qty { display: flex; align-items: center; border: 1px solid var(--tr-border); border-radius: 8px; overflow: hidden; }
+.tr-cart__qty button { border: none; background: #fff; width: 28px; height: 28px; }
+.tr-cart__qty input { width: 34px; border: none; text-align: center; background: #fff; }
+.tr-cart__line-total { font-weight: 600; min-width: 70px; text-align: right; }
+.tr-cart__remove { border: none; background: none; font-size: 1.2rem; color: var(--tr-gray); }
+.tr-cart__remove:hover { color: var(--tr-discount); }
+
+.tr-cart__summary { background: var(--tr-cream); border-radius: var(--tr-radius); padding: 24px; align-self: start; }
+.tr-cart__summary h5 { font-weight: 700; margin-bottom: 14px; }
+.tr-cart__summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 0.9rem; color: var(--tr-gray); }
+.tr-cart__summary-total { border-top: 1px solid var(--tr-border); margin-top: 8px; padding-top: 12px; font-weight: 700; color: var(--tr-dark); font-size: 1.05rem; }
+.tr-cart__continue { display: block; text-align: center; margin-top: 14px; font-size: 0.85rem; color: var(--tr-gray); }
+
+@media (max-width: 800px) {
+  .tr-cart__layout { grid-template-columns: 1fr; }
+  .tr-cart__row { grid-template-columns: 60px 1fr; grid-template-areas: "img info" "qty total"; }
+}
