@@ -9,6 +9,12 @@ import PaymentMethods, { labelForMethod } from '../components/common/PaymentMeth
 
 const POLL_INTERVAL_MS = 15000; // Bakong dev tokens are capped at 100 requests/day — poll gently
 
+// ABA, ACLEDA, and Wing all support scanning the standard Bakong KHQR code —
+// there's only one QR to generate regardless of which of these the shopper
+// picked. Visa/Mastercard would need a separate card-gateway integration
+// (not implemented here), so those still place the order directly.
+const QR_METHODS = ['khqr', 'aba', 'acleda', 'wing'];
+
 export default function Checkout() {
   const { items, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
@@ -24,16 +30,13 @@ export default function Checkout() {
   const [formError, setFormError] = useState('');
 
   // ─── KHQR (real Bakong payment) state ──────
-  // khqrSession: { qr, qrImage, md5, amount, expiresAt } once a QR has been
-  // generated; khqrStatus tracks where we are in that flow.
   const [khqrSession, setKhqrSession] = useState(null);
   const [khqrStatus, setKhqrStatus] = useState('idle'); // idle | generating | waiting | expired
-  const [now, setNow] = useState(Date.now()); // ticks every second while waiting, just to redraw the countdown
+  const [now, setNow] = useState(Date.now());
   const pollTimer = useRef(null);
   const tickTimer = useRef(null);
 
   useEffect(() => {
-    // Clean up any running timers if the user navigates away mid-payment.
     return () => {
       clearInterval(pollTimer.current);
       clearInterval(tickTimer.current);
@@ -56,9 +59,6 @@ export default function Checkout() {
   const shipping = subtotal >= 50 ? 0 : 5;
   const total = subtotal + shipping;
 
-  // Actually creates the order on the backend (POST /api/orders). Called
-  // either immediately (Cash/Card/Split) or once Bakong confirms payment
-  // (KHQR).
   async function submitOrder(paymentLabel) {
     try {
       const data = await api.post('/orders', {
@@ -79,7 +79,7 @@ export default function Checkout() {
     }
   }
 
-  // ─── KHQR flow ──────────────────────────────
+  // ─── QR flow (khqr / aba / acleda / wing) ──────────────────────────────
   async function startKhqrPayment() {
     setFormError('');
     setKhqrStatus('generating');
@@ -97,15 +97,13 @@ export default function Checkout() {
             clearInterval(pollTimer.current);
             clearInterval(tickTimer.current);
             setPlacing(true);
-            await submitOrder('KHQR (Bakong)');
+            await submitOrder(labelForMethod(paymentMethod));
           } else if (result.expired) {
             clearInterval(pollTimer.current);
             clearInterval(tickTimer.current);
             setKhqrStatus('expired');
           }
         } catch (e) {
-          // A transient network hiccup on one poll shouldn't kill the whole
-          // flow — just try again on the next tick.
           console.error('KHQR status check failed:', e);
         }
       }, POLL_INTERVAL_MS);
@@ -138,9 +136,7 @@ export default function Checkout() {
       }
     }
 
-    if (paymentMethod === 'khqr') {
-      // Don't create the order yet — generate a QR first and wait for
-      // Bakong to confirm the payment. submitOrder() runs once it's paid.
+    if (QR_METHODS.includes(paymentMethod)) {
       startKhqrPayment();
       return;
     }
@@ -162,7 +158,7 @@ export default function Checkout() {
 
       {khqrStatus === 'waiting' && khqrSession ? (
         <div className="tr-checkout__khqr">
-          <h5>Scan to Pay with Bakong KHQR</h5>
+          <h5>Scan to Pay with {labelForMethod(paymentMethod)}</h5>
           <img src={khqrSession.qrImage} alt="Bakong KHQR code" className="tr-checkout__khqr-image" />
           <p className="tr-checkout__khqr-amount">${khqrSession.amount.toFixed(2)}</p>
           <p>Open your bank's app (or Bakong app) and scan this code to pay.</p>
@@ -230,7 +226,7 @@ export default function Checkout() {
             <div className="tr-checkout__summary-row"><span>Shipping</span><span>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span></div>
             <div className="tr-checkout__summary-row tr-checkout__summary-total"><span>Total</span><span>${total.toFixed(2)}</span></div>
             <button type="submit" className="btn-dark-pill" style={{ width: '100%', marginTop: 16 }} disabled={placing || khqrStatus === 'generating'}>
-              {khqrStatus === 'generating' ? 'Generating QR Code...' : placing ? 'Placing Order...' : paymentMethod === 'khqr' ? 'Generate Payment QR' : 'Place Order & Pay'}
+              {khqrStatus === 'generating' ? 'Generating QR Code...' : placing ? 'Placing Order...' : QR_METHODS.includes(paymentMethod) ? 'Generate Payment QR' : 'Place Order & Pay'}
             </button>
             <Link to="/cart" className="tr-checkout__back">&larr; Back to Cart</Link>
           </div>
