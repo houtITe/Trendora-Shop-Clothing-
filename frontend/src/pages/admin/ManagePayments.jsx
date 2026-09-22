@@ -56,7 +56,7 @@ export default function ManagePayments() {
                 <tr key={p.payment_id}>
                   <td>#{p.payment_id}</td>
                   <td>#{p.order_id}</td>
-                  <td>{users.find((u) => u.user_id === p.user_id)?.name ?? 'Deleted user'}</td>
+                  <td>{p.user_id ? (users.find((u) => u.user_id === p.user_id)?.name ?? 'Deleted user') : 'Walk-in / Guest'}</td>
                   <td>${p.amount.toFixed(2)}</td>
                   <td>{p.payment_method}</td>
                   <td>{new Date(p.payment_date).toLocaleDateString()}</td>

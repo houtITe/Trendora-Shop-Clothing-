@@ -46,15 +46,35 @@ export default function ManageProducts() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  function openAdd() {
+  async function openAdd() {
     setForm({
       ...EMPTY,
       category_id: categories[0]?.category_id ?? '',
       brand_id: brands[0]?.brand_id ?? '',
+      sku: 'Auto-generating...',
+      barcode: 'Auto-generating...',
     });
     setImageFile(null);
     setPreviewUrl(null);
     setAdding(true);
+
+    try {
+      const res = await api.get('/products/next-codes');
+      const codes = res?.data || res;
+      if (codes?.sku || codes?.barcode) {
+        setForm((prev) => ({
+          ...prev,
+          sku: codes.sku || '',
+          barcode: codes.barcode || '',
+        }));
+      }
+    } catch {
+      setForm((prev) => ({
+        ...prev,
+        sku: '',
+        barcode: '',
+      }));
+    }
   }
 
   function openEdit(p) {
@@ -105,8 +125,8 @@ export default function ManageProducts() {
     fd.append('color', form.color);
     fd.append('material', form.material);
     fd.append('description', form.description);
-    fd.append('sku', form.sku);
-    fd.append('barcode', form.barcode);
+    if (form.sku && !form.sku.includes('...')) fd.append('sku', form.sku);
+    if (form.barcode && !form.barcode.includes('...')) fd.append('barcode', form.barcode);
     fd.append('category_id', form.category_id);
     fd.append('brand_id', form.brand_id);
     if (imageFile) fd.append('image', imageFile);
@@ -268,12 +288,36 @@ export default function ManageProducts() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
-                <label>SKU</label>
-                <input className="form-control-trendora" placeholder="e.g. TR-0016" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>SKU</span>
+                  <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 600, background: '#dcfce7', padding: '2px 8px', borderRadius: 4 }}>
+                    Auto-generated
+                  </span>
+                </label>
+                <input
+                  className="form-control-trendora"
+                  placeholder="Auto-generated"
+                  value={form.sku}
+                  readOnly
+                  style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', color: '#475569', fontWeight: 500 }}
+                  title="SKU is automatically generated to ensure unique codes"
+                />
               </div>
               <div>
-                <label>Barcode</label>
-                <input className="form-control-trendora" placeholder="Scanned/typed by staff in POS" value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} />
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>Barcode</span>
+                  <span style={{ fontSize: '0.72rem', color: '#16a34a', fontWeight: 600, background: '#dcfce7', padding: '2px 8px', borderRadius: 4 }}>
+                    Auto-generated
+                  </span>
+                </label>
+                <input
+                  className="form-control-trendora"
+                  placeholder="Auto-generated"
+                  value={form.barcode}
+                  readOnly
+                  style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', color: '#475569', fontWeight: 500 }}
+                  title="Barcode is automatically generated to ensure unique codes"
+                />
               </div>
             </div>
 

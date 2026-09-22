@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "db:init": "node src/db/init.js",
-    "db:seed": "node src/db/seed.js"
+    "db:seed": "node src/db/seed.js",
+    "db:migrate:shipping": "node src/db/createShippingZones.js"
   },
   "dependencies": {
     "bakong-khqr": "^1.0.20",

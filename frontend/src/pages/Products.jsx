@@ -53,12 +53,12 @@ export default function Products() {
     const list = allProducts.filter((p) => {
       if (categoryId && p.category_id !== categoryId) return false;
       if (brandId && p.brand_id !== brandId) return false;
-      if (search && !p.product_name.toLowerCase().includes(search)) return false;
+      if (search && !(p.product_name && p.product_name.toLowerCase().includes(search))) return false;
       if (priceRange) {
         const price = netPrice(p);
         if (price < priceRange.min || price > priceRange.max) return false;
       }
-      if (color && p.color.toLowerCase() !== color.toLowerCase()) return false;
+      if (color && (!p.color || p.color.toLowerCase() !== color.toLowerCase())) return false;
       if (size && p.size !== size) return false;
       return true;
     });

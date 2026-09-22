@@ -39,7 +39,10 @@ const me = asyncHandler(async (req, res) => {
 
 const forgotPassword = asyncHandler(async (req, res) => {
   const result = await authService.forgotPassword(req.body.email);
-  return ApiResponse.success(res, { message: result.message, data: { resetToken: result.resetToken } });
+  return ApiResponse.success(res, {
+    message: result.message,
+    data: result.resetToken ? { resetToken: result.resetToken } : undefined,
+  });
 });
 
 const resetPassword = asyncHandler(async (req, res) => {
@@ -48,10 +51,17 @@ const resetPassword = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, { message: result.message });
 });
 
+const refresh = asyncHandler(async (req, res) => {
+  const token = req.cookies?.refreshToken || req.body?.refreshToken;
+  const { user, accessToken, refreshToken: newRefreshToken } = await authService.refreshSession(token);
+  setAuthCookies(res, { accessToken, refreshToken: newRefreshToken });
+  return ApiResponse.success(res, { message: 'Session refreshed.', data: { user, accessToken } });
+});
+
 const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const result = await authService.changePassword(req.user.user_id, currentPassword, newPassword);
   return ApiResponse.success(res, { message: result.message });
 });
 
-module.exports = { register, login, logout, me, forgotPassword, resetPassword, changePassword };
+module.exports = { register, login, logout, me, forgotPassword, resetPassword, changePassword, refresh };

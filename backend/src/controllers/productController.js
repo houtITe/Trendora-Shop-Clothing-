@@ -48,9 +48,14 @@ const updateProduct = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, { message: 'Product updated.', data: { product } });
 });
 
+const getNextCodes = asyncHandler(async (req, res) => {
+  const codes = await productService.getNextCodes();
+  return ApiResponse.success(res, { message: 'Next codes generated.', data: codes });
+});
+
 const deleteProduct = asyncHandler(async (req, res) => {
   const result = await productService.deleteProduct(req.params.id);
   return ApiResponse.success(res, { message: result.message });
 });
 
-module.exports = { listProducts, getProduct, getByBarcode, adjustStock, createProduct, updateProduct, deleteProduct };
+module.exports = { listProducts, getProduct, getByBarcode, getNextCodes, adjustStock, createProduct, updateProduct, deleteProduct };

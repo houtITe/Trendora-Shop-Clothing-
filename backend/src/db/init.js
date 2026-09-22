@@ -3,6 +3,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');
+const { sslConfig } = require('../config/database');
 
 async function run() {
   const sql = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
@@ -13,6 +14,7 @@ async function run() {
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     multipleStatements: true,
+    ssl: sslConfig,
   });
 
   try {

@@ -1,3 +1,4 @@
+const { pool } = require('../config/database');
 const ApiError = require('../utils/ApiError');
 const ProductRepository = require('../repositories/ProductRepository');
 const CategoryRepository = require('../repositories/CategoryRepository');
@@ -49,9 +50,32 @@ async function updateProduct(id, changes) {
 }
 
 async function deleteProduct(id) {
+  // Guard against foreign key RESTRICT violations
+  const [[orderCheck]] = await pool.query(
+    'SELECT COUNT(*) AS count FROM order_details WHERE product_id = ?',
+    [Number(id)]
+  );
+  if (orderCheck.count > 0) {
+    throw ApiError.badRequest(
+      'Cannot delete product: it is associated with existing customer orders. Please set its stock to 0 to mark it unavailable instead.'
+    );
+  }
+
+  const [[returnCheck]] = await pool.query(
+    'SELECT COUNT(*) AS count FROM returns WHERE product_id = ? OR exchange_product_id = ?',
+    [Number(id), Number(id)]
+  );
+  if (returnCheck.count > 0) {
+    throw ApiError.badRequest('Cannot delete product: it is associated with existing return/exchange records.');
+  }
+
   const removed = await ProductRepository.remove(id);
   if (!removed) throw ApiError.notFound('Product not found.');
   return { message: 'Product deleted.' };
 }
 
-module.exports = { listProducts, getProduct, getByBarcode, adjustStock, createProduct, updateProduct, deleteProduct };
+async function getNextCodes() {
+  return ProductRepository.generateNextCodes();
+}
+
+module.exports = { listProducts, getProduct, getByBarcode, getNextCodes, adjustStock, createProduct, updateProduct, deleteProduct };

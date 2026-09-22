@@ -1,9 +1,33 @@
 const { pool } = require('../config/database');
 
 async function findByUser(userId) {
-  // SELECT * FROM cart_items WHERE user_id = ?
-  const [rows] = await pool.query('SELECT * FROM cart_items WHERE user_id = ?', [Number(userId)]);
-  return rows;
+  // JOIN cart_items and products in a single SQL query
+  const [rows] = await pool.query(
+    `SELECT c.cart_id, c.user_id, c.product_id, c.quantity,
+            p.product_name, p.price, p.discount, p.stock, p.image, p.sku, p.barcode, p.size, p.color
+     FROM cart_items c
+     JOIN products p ON p.product_id = c.product_id
+     WHERE c.user_id = ?`,
+    [Number(userId)]
+  );
+  return rows.map((r) => ({
+    cart_id: r.cart_id,
+    user_id: r.user_id,
+    product_id: r.product_id,
+    quantity: r.quantity,
+    product: {
+      product_id: r.product_id,
+      product_name: r.product_name,
+      price: r.price,
+      discount: r.discount,
+      stock: r.stock,
+      image: r.image,
+      sku: r.sku,
+      barcode: r.barcode,
+      size: r.size,
+      color: r.color,
+    },
+  }));
 }
 
 async function findOne(userId, productId) {

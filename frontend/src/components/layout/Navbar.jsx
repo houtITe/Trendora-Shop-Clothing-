@@ -176,6 +176,7 @@ export default function Navbar() {
         )}
 
         <nav className="tr-navbar__mobile-nav">
+          <div className="tr-navbar__mobile-section-label">Browse</div>
           {NAV_LINKS.map(({ to, label, icon, end }) => (
             <NavLink
               key={to}
@@ -190,6 +191,75 @@ export default function Navbar() {
               </span>
             </NavLink>
           ))}
+
+          {isAuthenticated && (
+            <>
+              <div className="tr-navbar__mobile-section-label">Account</div>
+              <NavLink
+                to="/profile"
+                className={({ isActive }) => (isActive ? 'is-active' : '')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>
+                  <Icon name="user" size={18} />
+                  My Profile
+                </span>
+              </NavLink>
+              <NavLink
+                to="/orders"
+                className={({ isActive }) => (isActive ? 'is-active' : '')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>
+                  <Icon name="package" size={18} />
+                  My Orders
+                </span>
+              </NavLink>
+            </>
+          )}
+
+          {isAdmin && (
+            <>
+              <div className="tr-navbar__mobile-section-label">Administration</div>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => (isActive ? 'is-active' : '')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>
+                  <Icon name="grid" size={18} />
+                  Admin Dashboard
+                </span>
+              </NavLink>
+            </>
+          )}
+
+          {isStaff && (
+            <>
+              <div className="tr-navbar__mobile-section-label">Staff Portal</div>
+              <NavLink
+                to="/staff"
+                end
+                className={({ isActive }) => (isActive ? 'is-active' : '')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>
+                  <Icon name="grid" size={18} />
+                  Staff Dashboard
+                </span>
+              </NavLink>
+              <NavLink
+                to="/staff/pos"
+                className={({ isActive }) => (isActive ? 'is-active' : '')}
+                onClick={() => setMenuOpen(false)}
+              >
+                <span>
+                  <Icon name="cart" size={18} />
+                  POS Terminal
+                </span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="tr-navbar__mobile-footer">

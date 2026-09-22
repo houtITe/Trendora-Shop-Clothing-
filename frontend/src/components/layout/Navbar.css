@@ -379,6 +379,24 @@
   font-weight: 600;
 }
 
+.tr-navbar__mobile-section-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tr-gray);
+  padding: 12px 16px 4px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  margin-top: 4px;
+}
+.tr-navbar__mobile-section-label:first-child {
+  border-top: none;
+  padding-top: 4px;
+  margin-top: 0;
+}
+
+
+
 /* Mobile footer */
 .tr-navbar__mobile-footer {
   border-top: 1px solid rgba(0,0,0,0.06);

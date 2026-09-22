@@ -282,3 +282,27 @@ button:disabled,
   }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- Print Media Styling ---------- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-invoice,
+  #printable-invoice *,
+  #pos-receipt,
+  #pos-receipt * {
+    visibility: visible;
+  }
+  #printable-invoice,
+  #pos-receipt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

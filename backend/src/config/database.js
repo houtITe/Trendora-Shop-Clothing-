@@ -9,9 +9,33 @@ const env = require('./env');
 // ?ssl-mode=REQUIRED) — set DB_SSL_CA in .env to the path of the
 // downloaded CA certificate to enable it. Local MySQL doesn't use this, so
 // leaving DB_SSL_CA blank keeps the old plain (non-SSL) connection.
-const sslConfig = env.db.sslCaPath
-  ? { ca: fs.readFileSync(env.db.sslCaPath) }
-  : undefined;
+const path = require('path');
+
+function resolveSslConfig() {
+  if (!env.db.sslCaPath) return undefined;
+
+  const candidatePaths = [
+    env.db.sslCaPath,
+    path.resolve(process.cwd(), env.db.sslCaPath),
+    path.resolve(__dirname, '../../ca.pem'),
+    path.resolve(__dirname, '../../../ca.pem'),
+  ];
+
+  for (const candidate of candidatePaths) {
+    if (candidate && fs.existsSync(candidate)) {
+      try {
+        return { ca: fs.readFileSync(candidate) };
+      } catch (err) {
+        console.warn(`[db] Could not read CA cert from ${candidate}:`, err.message);
+      }
+    }
+  }
+
+  console.warn(`[db] Warning: DB_SSL_CA path "${env.db.sslCaPath}" not found. Connecting without custom CA cert.`);
+  return undefined;
+}
+
+const sslConfig = resolveSslConfig();
 
 const pool = mysql.createPool({
   host: env.db.host,
@@ -35,4 +59,4 @@ async function assertDbConnection() {
   }
 }
 
-module.exports = { pool, assertDbConnection };
+module.exports = { pool, assertDbConnection, sslConfig };

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Icon from '../components/common/Icon.jsx';
+import { api, ApiRequestError } from '../services/api.js';
+import { useToast } from '../context/ToastContext.jsx';
 import './Contact.css';
 
 const FAQS = [
@@ -19,7 +21,9 @@ const CONTACT_DETAILS = [
 ];
 
 export default function Contact() {
+  const { success: toastSuccess, error: toastError } = useToast();
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);
   const [errors, setErrors] = useState({});
   const [values, setValues] = useState({
@@ -39,14 +43,30 @@ export default function Contact() {
     return next;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length > 0) return;
-    setSent(true);
-    setValues({ name: '', email: '', subject: 'General Question', order: '', message: '' });
-    setTimeout(() => setSent(false), 5000);
+
+    setSubmitting(true);
+    try {
+      await api.post('/contact', {
+        name: values.name.trim(),
+        email: values.email.trim(),
+        subject: values.order ? `${values.subject} (Order #${values.order.trim()})` : values.subject,
+        message: values.message.trim(),
+      });
+      setSent(true);
+      toastSuccess('Thanks! Your message has been received.');
+      setValues({ name: '', email: '', subject: 'General Question', order: '', message: '' });
+      setTimeout(() => setSent(false), 5000);
+    } catch (err) {
+      const msg = err instanceof ApiRequestError ? err.message : 'Could not send message. Please try again.';
+      toastError(msg);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -155,8 +175,8 @@ export default function Contact() {
             {errors.message && <p className="field-error" id="cf-message-err">{errors.message}</p>}
           </div>
 
-          <button type="submit" className="btn-dark-pill tr-contact-form__submit">
-            Send message <Icon name="arrowRight" size={16} />
+          <button type="submit" className="btn-dark-pill tr-contact-form__submit" disabled={submitting}>
+            {submitting ? 'Sending...' : <>Send message <Icon name="arrowRight" size={16} /></>}
           </button>
         </form>
 

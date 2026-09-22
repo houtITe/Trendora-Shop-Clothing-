@@ -20,11 +20,22 @@ export default function Profile() {
   const { success: toastSuccess, error: toastError } = useToast();
   const [tab, setTab] = useState('account');
   const [form, setForm] = useState({
-    name: user.name, email: user.email, phone: user.phone || '', address: user.address || '',
+    name: user?.name || '', email: user?.email || '', phone: user?.phone || '', address: user?.address || '',
   });
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+      });
+    }
+  }, [user]);
   const [passwordForm, setPasswordForm] = useState({ current: '', next: '' });
   const [savedMsg, setSavedMsg] = useState('');
-  const [pwMsg, setPwMsg] = useState('');
+  const [pwStatus, setPwStatus] = useState({ text: '', isError: false });
   const [saving, setSaving] = useState(false);
 
   const [myReviews, setMyReviews] = useState([]);
@@ -69,17 +80,17 @@ export default function Profile() {
         newPassword: passwordForm.next,
       });
       setPasswordForm({ current: '', next: '' });
-      setPwMsg('Password changed successfully.');
+      setPwStatus({ text: 'Password changed successfully.', isError: false });
       toastSuccess('Password changed successfully.');
-      setTimeout(() => setPwMsg(''), 2500);
+      setTimeout(() => setPwStatus({ text: '', isError: false }), 3000);
     } catch (err) {
-      const msg = err instanceof ApiRequestError ? err.message : 'Current password is incorrect.';
-      setPwMsg(msg);
+      const msg = err instanceof ApiRequestError ? err.message : 'Failed to update password.';
+      setPwStatus({ text: msg, isError: true });
       toastError(msg);
     }
   }
 
-  const initials = (user.name || 'U')
+  const initials = (user?.name || 'U')
     .split(' ')
     .map((p) => p[0])
     .slice(0, 2)
@@ -91,9 +102,9 @@ export default function Profile() {
       <div className="tr-profile__hero">
         <div className="tr-profile__avatar">{initials}</div>
         <div>
-          <h1>{user.name}</h1>
-          <p>{user.email}</p>
-          <span className={`tr-admin__pill tr-admin__pill--${user.role}`}>{user.role}</span>
+          <h1>{user?.name || 'User Profile'}</h1>
+          <p>{user?.email || ''}</p>
+          {user?.role && <span className={`tr-admin__pill tr-admin__pill--${user.role}`}>{user.role}</span>}
         </div>
       </div>
 
@@ -113,8 +124,11 @@ export default function Profile() {
               <input className="form-control-trendora" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
             <div>
-              <label>Email</label>
-              <input type="email" className="form-control-trendora" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+              <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>Email</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--tr-gray)' }}>(Cannot be changed)</span>
+              </label>
+              <input type="email" className="form-control-trendora" value={form.email} disabled style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed' }} />
             </div>
           </div>
           <div className="tr-profile__row">
@@ -136,7 +150,11 @@ export default function Profile() {
       {tab === 'security' && (
         <form className="tr-profile__card" onSubmit={changePassword}>
           <h5>Change Password</h5>
-          {pwMsg && <div className={pwMsg.includes('incorrect') ? 'tr-profile__error' : 'tr-profile__success'}>{pwMsg}</div>}
+          {pwStatus.text && (
+            <div className={pwStatus.isError ? 'tr-profile__error' : 'tr-profile__success'}>
+              {pwStatus.text}
+            </div>
+          )}
           <div className="tr-profile__row">
             <div>
               <label>Current Password</label>
@@ -144,7 +162,10 @@ export default function Profile() {
             </div>
             <div>
               <label>New Password</label>
-              <input type="password" className="form-control-trendora" value={passwordForm.next} onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })} required minLength={6} />
+              <input type="password" className="form-control-trendora" value={passwordForm.next} onChange={(e) => setPasswordForm({ ...passwordForm, next: e.target.value })} required minLength={8} />
+              <small style={{ display: 'block', fontSize: '0.74rem', color: 'var(--tr-gray)', marginTop: 4 }}>
+                At least 8 characters, with at least 1 letter and 1 number.
+              </small>
             </div>
           </div>
           <button type="submit" className="btn-tan" style={{ marginTop: 14 }}>Update Password</button>

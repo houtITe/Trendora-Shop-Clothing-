@@ -66,9 +66,18 @@ async function create(data) {
   return findById(result.insertId);
 }
 
+const ALLOWED_UPDATE_COLUMNS = new Set([
+  'name', 'email', 'password', 'role', 'phone', 'address', 'walk_in',
+  'reset_token', 'reset_token_expiry',
+]);
+
 async function update(id, changes) {
   // UPDATE users SET ... WHERE user_id = ?
-  const entries = Object.entries(changes).filter(([, v]) => v !== undefined);
+  const entries = Object.entries(changes).filter(([key, v]) => {
+    if (v === undefined) return false;
+    const dbColumn = COLUMN_MAP[key] || key;
+    return ALLOWED_UPDATE_COLUMNS.has(dbColumn);
+  });
   if (entries.length === 0) return findById(id);
 
   const setClause = entries.map(([key]) => `${COLUMN_MAP[key] || key} = ?`).join(', ');
@@ -77,6 +86,16 @@ async function update(id, changes) {
 
   await pool.query(`UPDATE users SET ${setClause} WHERE user_id = ?`, values);
   return findById(id);
+}
+
+async function findByResetToken(token) {
+  // SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > ?
+  const now = Date.now();
+  const [rows] = await pool.query(
+    `SELECT ${SELECT_COLUMNS} FROM users WHERE reset_token = ? AND reset_token_expiry > ? LIMIT 1`,
+    [String(token), now]
+  );
+  return toRow(rows[0]) || null;
 }
 
 async function remove(id) {
@@ -105,4 +124,4 @@ async function findCustomers(search) {
   return rows.map(toRow);
 }
 
-module.exports = { findAll, count, findById, findByEmail, findCustomers, create, update, remove, sanitize };
+module.exports = { findAll, count, findById, findByEmail, findByResetToken, findCustomers, create, update, remove, sanitize };

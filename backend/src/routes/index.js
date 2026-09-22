@@ -16,5 +16,6 @@ router.use('/held-orders', require('./heldOrderRoutes'));
 router.use('/reviews', require('./reviewRoutes'));
 router.use('/contact', require('./contactRoutes'));
 router.use('/dashboard', require('./dashboardRoutes'));
+router.use('/shipping-zones', require('./shippingZoneRoutes'));
 
 module.exports = router;

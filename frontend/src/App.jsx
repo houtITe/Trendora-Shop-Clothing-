@@ -31,6 +31,7 @@ import ManageCategories from './pages/admin/ManageCategories.jsx';
 import ManageBrands from './pages/admin/ManageBrands.jsx';
 import ManageOrders from './pages/admin/ManageOrders.jsx';
 import ManagePayments from './pages/admin/ManagePayments.jsx';
+import ManageShipping from './pages/admin/ManageShipping.jsx';
 import StaffDashboard from './pages/staff/StaffDashboard.jsx';
 import StaffOverview from './pages/staff/StaffOverview.jsx';
 import POS from './pages/staff/POS.jsx';
@@ -115,6 +116,7 @@ export default function App() {
                   <Route path="brands" element={<ManageBrands />} />
                   <Route path="orders" element={<ManageOrders />} />
                   <Route path="payments" element={<ManagePayments />} />
+                  <Route path="shipping" element={<ManageShipping />} />
                 </Route>
 
                 <Route path="*" element={<NotFound />} />

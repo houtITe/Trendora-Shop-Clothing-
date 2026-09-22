@@ -144,7 +144,7 @@ export default function ProductDetailOverlay({ product: initialProduct, onClose 
 
   const avgRating = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
   const recommendPct = reviews.length ? Math.round((reviews.filter((r) => !!r.recommend).length / reviews.length) * 100) : 0;
-  const myReview = isAuthenticated ? reviews.find((r) => r.user_id === user.user_id) : null;
+  const myReview = isAuthenticated && user ? reviews.find((r) => r.user_id === user.user_id) : null;
 
   const related = useMemo(
     () =>
@@ -163,6 +163,12 @@ export default function ProductDetailOverlay({ product: initialProduct, onClose 
   }
 
   async function handleAddToCart() {
+    if (!isAuthenticated) {
+      toastInfo('Please sign in to add items to your cart.');
+      onClose();
+      navigate('/login', { state: { from: { pathname: '/products' } } });
+      return;
+    }
     const result = await addToCart(selectedVariantProduct(), qty);
     if (result?.success === false) {
       toastInfo(result.message || 'Could not add to cart.');
@@ -172,6 +178,12 @@ export default function ProductDetailOverlay({ product: initialProduct, onClose 
   }
 
   async function handleBuyNow() {
+    if (!isAuthenticated) {
+      toastInfo('Please sign in to complete your purchase.');
+      onClose();
+      navigate('/login', { state: { from: { pathname: '/products' } } });
+      return;
+    }
     const result = await addToCart(selectedVariantProduct(), qty);
     if (result?.success === false) {
       toastInfo(result.message || 'Could not add to cart.');
@@ -198,7 +210,14 @@ export default function ProductDetailOverlay({ product: initialProduct, onClose 
 
         <div className="tr-overlay__top">
           <div className="tr-overlay__image">
-            <img src={product.image} alt={product.product_name} />
+            <img
+              src={product.image}
+              alt={product.product_name}
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400" fill="%23f4ede4"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238a7c6d" font-family="sans-serif" font-size="16" font-weight="600">Trendora</text></svg>';
+              }}
+            />
           </div>
 
           <div className="tr-overlay__info">

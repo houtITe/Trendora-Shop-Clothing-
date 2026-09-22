@@ -57,7 +57,7 @@ async function getStaffSummary(cashierId) {
        COALESCE(SUM(total), 0) AS todaysSales,
        COUNT(*) AS todaysTransactions
      FROM orders
-     WHERE cashier_id = ? AND channel = 'POS' AND DATE(order_date) = CURDATE()`,
+     WHERE cashier_id = ? AND channel = 'POS' AND order_date >= CURDATE() AND order_date < CURDATE() + INTERVAL 1 DAY`,
     [Number(cashierId)]
   );
   return { todaysSales: Number(row.todaysSales), todaysTransactions: row.todaysTransactions };

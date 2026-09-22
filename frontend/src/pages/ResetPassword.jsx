@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { UserTable } from '../services/db.js';
+import { api, ApiRequestError } from '../services/api.js';
 import { useToast } from '../context/ToastContext.jsx';
 import './Auth.css';
 
@@ -14,7 +14,7 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -23,30 +23,27 @@ export default function ResetPassword() {
       toastError('Passwords do not match.');
       return;
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
-      toastError('Password must be at least 6 characters.');
+    if (password.length < 8 || !/\d/.test(password) || !/[A-Za-z]/.test(password)) {
+      const msg = 'Password must be at least 8 characters long and contain at least one letter and one number.';
+      setError(msg);
+      toastError(msg);
       return;
     }
 
     setLoading(true);
 
-    const user = UserTable.all().find(
-      (u) => u.resetToken === token && u.resetTokenExpiry && u.resetTokenExpiry > Date.now()
-    );
-
-    if (!user) {
-      setError('This reset link is invalid or has expired. Please request a new one.');
-      toastError('This reset link is invalid or has expired.');
+    try {
+      await api.post('/auth/reset-password', { token, newPassword: password });
+      setMessage('Password reset successful! Redirecting to login...');
+      toastSuccess('Password reset successful! Please sign in with your new password.');
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err) {
+      const msg = err instanceof ApiRequestError ? err.message : 'This reset link is invalid or has expired. Please request a new one.';
+      setError(msg);
+      toastError(msg);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    UserTable.update(user.user_id, { password, resetToken: null, resetTokenExpiry: null });
-    setMessage('Password reset successful! Redirecting to login...');
-    toastSuccess('Password reset successful! Please sign in with your new password.');
-    setLoading(false);
-    setTimeout(() => navigate('/login'), 2000);
   };
 
   return (

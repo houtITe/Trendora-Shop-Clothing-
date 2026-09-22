@@ -88,3 +88,9 @@ Seed products use royalty-free Unsplash photos as stand-ins for the
 `image` column. Replace the URLs in `src/data/seedData.js`, or swap them
 per-product from the Admin → Manage Products screen (just paste an image
 URL).
+## command for repush
+1/ git rm --cached backend/.env
+2/ echo .env >> backend/.gitignore
+3/ git add .
+4/ git commit --amend --no-edit
+5/ git push origin main --force

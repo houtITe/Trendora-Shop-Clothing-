@@ -146,9 +146,79 @@
   text-decoration: line-through;
 }
 
-/* Touch devices: keep actions visible */
-@media (hover: none) {
+/* Desktop / Tablet touch devices with large screens */
+@media (hover: none) and (min-width: 769px) {
   .tr-product-card__overlay { opacity: 1; transform: none; }
+}
+
+/* Mobile responsive (phones & small tablets) */
+@media (max-width: 768px) {
+  .tr-product-card {
+    border-radius: 12px;
+  }
+  .tr-product-card__badges {
+    top: 8px;
+    left: 8px;
+    gap: 4px;
+  }
+  .badge-discount, .badge-new, .tr-product-card__soldout {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+  .tr-product-card__overlay {
+    position: absolute;
+    left: auto;
+    right: 8px;
+    bottom: 8px;
+    opacity: 1;
+    transform: none;
+    gap: 0;
+    z-index: 3;
+  }
+  .tr-product-card__view {
+    display: none !important; /* Entire card is already tap-to-open */
+  }
+  .tr-product-card__add {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(17, 17, 17, 0.9);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tr-product-card__add:active {
+    transform: scale(0.92);
+  }
+  .tr-product-card__add .tr-product-card__add-text {
+    display: none;
+  }
+  .tr-product-card__body {
+    padding: 10px 10px 14px;
+    gap: 2px;
+  }
+  .tr-product-card__name {
+    font-size: 0.88rem;
+    line-height: 1.35;
+    min-height: 2.7em;
+  }
+  .tr-product-card__meta {
+    font-size: 0.72rem;
+  }
+  .tr-product-card__price-row {
+    margin-top: 4px;
+    gap: 6px;
+  }
+  .tr-product-card__price {
+    font-size: 1.02rem;
+  }
+  .tr-product-card__price-old {
+    font-size: 0.78rem;
+  }
 }
 
 /* src/components/common/PaymentMethods.css */

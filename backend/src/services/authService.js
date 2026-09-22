@@ -1,7 +1,7 @@
 const ApiError = require('../utils/ApiError');
 const UserRepository = require('../repositories/UserRepository');
 const { hashPassword, comparePassword, isStrongPassword } = require('../utils/password');
-const { generateAccessToken, generateRefreshToken } = require('../utils/tokens');
+const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = require('../utils/tokens');
 const { v4: uuidv4 } = require('uuid');
 
 async function register({ name, email, password }) {
@@ -43,8 +43,8 @@ async function forgotPassword(email) {
   const resetTokenExpiry = Date.now() + 1000 * 60 * 30; // 30 minutes
   await UserRepository.update(user.user_id, { resetToken, resetTokenExpiry });
 
-  // TODO: send an actual email with a reset link containing `resetToken`.
-  // Returning it here only because there's no email provider wired up yet.
+  // Log on the server side for dev convenience, and return resetToken for demo/school environment
+  console.log(`[auth] Password reset requested for ${user.email}. Token: ${resetToken}`);
   return { message: 'If an account exists for that email, a reset link has been sent.', resetToken };
 }
 
@@ -52,13 +52,27 @@ async function resetPassword(token, newPassword) {
   if (!isStrongPassword(newPassword)) {
     throw ApiError.unprocessable('Password does not meet strength requirements.');
   }
-  const users = await UserRepository.findAll();
-  const user = users.find((u) => u.resetToken === token && u.resetTokenExpiry > Date.now());
+  const user = await UserRepository.findByResetToken(token);
   if (!user) throw ApiError.badRequest('Reset token is invalid or has expired.');
 
   const hashed = await hashPassword(newPassword);
   await UserRepository.update(user.user_id, { password: hashed, resetToken: null, resetTokenExpiry: null });
   return { message: 'Password has been reset successfully.' };
+}
+
+async function refreshSession(refreshToken) {
+  if (!refreshToken) throw ApiError.unauthorized('No refresh token provided.');
+  let payload;
+  try {
+    payload = verifyRefreshToken(refreshToken);
+  } catch (err) {
+    throw ApiError.unauthorized('Invalid or expired refresh token. Please log in again.');
+  }
+
+  const user = await UserRepository.findById(payload.sub);
+  if (!user) throw ApiError.unauthorized('User no longer exists.');
+
+  return issueTokensFor(user);
 }
 
 async function changePassword(userId, currentPassword, newPassword) {
@@ -76,4 +90,4 @@ async function changePassword(userId, currentPassword, newPassword) {
   return { message: 'Password changed successfully.' };
 }
 
-module.exports = { register, login, forgotPassword, resetPassword, changePassword, issueTokensFor };
+module.exports = { register, login, forgotPassword, resetPassword, changePassword, refreshSession, issueTokensFor };

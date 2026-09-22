@@ -215,7 +215,7 @@ export default function POS() {
         total,
         paymentLabel,
         customerName: customer?.name || 'Walk-in Customer',
-        cashierName: user.name,
+        cashierName: user?.name || 'Staff',
         date: new Date(),
       });
 

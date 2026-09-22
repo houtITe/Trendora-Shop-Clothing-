@@ -18,16 +18,22 @@ async function findAll({ offset, limit } = {}) {
   return rows;
 }
 
-async function create(data) {
+async function create(data, clientOrPool = pool) {
   // INSERT INTO payments (order_id, user_id, amount, payment_method, status) VALUES (...)
   const row = { user_id: null, status: 'Completed', ...data };
-  const [result] = await pool.query(
+  const [result] = await clientOrPool.query(
     `INSERT INTO payments (order_id, user_id, amount, payment_method, status)
      VALUES (?, ?, ?, ?, ?)`,
     [Number(row.order_id), row.user_id, Number(row.amount), row.payment_method, row.status]
   );
-  const [rows] = await pool.query('SELECT * FROM payments WHERE payment_id = ?', [result.insertId]);
+  const [rows] = await clientOrPool.query('SELECT * FROM payments WHERE payment_id = ?', [result.insertId]);
   return rows[0];
 }
 
-module.exports = { findByOrder, findAll, create };
+async function updateStatusByOrder(orderId, status, clientOrPool = pool) {
+  // UPDATE payments SET status = ? WHERE order_id = ?
+  await clientOrPool.query('UPDATE payments SET status = ? WHERE order_id = ?', [status, Number(orderId)]);
+  return findByOrder(orderId);
+}
+
+module.exports = { findByOrder, findAll, create, updateStatusByOrder };

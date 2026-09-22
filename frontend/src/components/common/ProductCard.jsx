@@ -44,7 +44,7 @@ export default function ProductCard({ product, badge }) {
   }
 
   function handleOpen() {
-    requireAuth(() => setOpen(true));
+    setOpen(true);
   }
 
   function handleKeyDown(e) {
@@ -65,7 +65,15 @@ export default function ProductCard({ product, badge }) {
         aria-label={`View ${product.product_name}`}
       >
         <div className="tr-product-card__image-wrap">
-          <img src={product.image} alt={product.product_name} loading="lazy" />
+          <img
+            src={product.image}
+            alt={product.product_name}
+            loading="lazy"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400" fill="%23f4ede4"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%238a7c6d" font-family="sans-serif" font-size="16" font-weight="600">Trendora</text></svg>';
+            }}
+          />
 
           <div className="tr-product-card__badges">
             {badge && <span className="badge-new">{badge}</span>}
@@ -78,14 +86,19 @@ export default function ProductCard({ product, badge }) {
               className={`tr-product-card__add ${adding ? 'is-added' : ''}`}
               onClick={handleQuickAdd}
               disabled={outOfStock}
+              title={outOfStock ? 'Out of stock' : adding ? 'Added to cart' : 'Add to cart'}
+              aria-label={outOfStock ? 'Out of stock' : 'Add to cart'}
             >
               <Icon name="cart" size={16} />
-              {outOfStock ? 'Out of stock' : adding ? 'Added' : 'Add to cart'}
+              <span className="tr-product-card__add-text">
+                {outOfStock ? 'Out of stock' : adding ? 'Added' : 'Add to cart'}
+              </span>
             </button>
             <button
               className="tr-product-card__view"
               onClick={(e) => { e.stopPropagation(); handleOpen(); }}
               aria-label="View product details"
+              title="View product details"
             >
               <Icon name="arrowRight" size={16} />
             </button>
@@ -106,7 +119,7 @@ export default function ProductCard({ product, badge }) {
         </div>
       </article>
 
-      {open && isAuthenticated && (
+      {open && (
         <ProductDetailOverlay product={product} onClose={() => setOpen(false)} />
       )}
     </>

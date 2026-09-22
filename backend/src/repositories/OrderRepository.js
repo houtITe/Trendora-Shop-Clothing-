@@ -30,55 +30,87 @@ async function findByCashier(cashierId) {
   return rows;
 }
 
-async function findById(id) {
+async function findById(id, clientOrPool = pool) {
   // SELECT * FROM orders WHERE order_id = ?
-  const [rows] = await pool.query('SELECT * FROM orders WHERE order_id = ?', [Number(id)]);
+  const [rows] = await clientOrPool.query('SELECT * FROM orders WHERE order_id = ?', [Number(id)]);
   return rows[0] || null;
 }
 
-async function create(data) {
-  // INSERT INTO orders (user_id, total, status, channel, cashier_id, shipping_address) VALUES (...)
+async function create(data, clientOrPool = pool) {
+  // INSERT INTO orders (user_id, total, shipping_fee, status, channel, cashier_id, shipping_address) VALUES (...)
   const row = {
     user_id: null,
+    total: 0,
+    shipping_fee: 0,
     status: 'Pending',
     channel: 'Online',
     cashier_id: null,
     shipping_address: null,
     ...data,
   };
-  const [result] = await pool.query(
-    `INSERT INTO orders (user_id, total, status, channel, cashier_id, shipping_address)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [row.user_id, row.total, row.status, row.channel, row.cashier_id, row.shipping_address]
+  const [result] = await clientOrPool.query(
+    `INSERT INTO orders (user_id, total, shipping_fee, status, channel, cashier_id, shipping_address)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [row.user_id, Number(row.total), Number(row.shipping_fee || 0), row.status, row.channel, row.cashier_id, row.shipping_address]
   );
-  return findById(result.insertId);
+  return findById(result.insertId, clientOrPool);
 }
 
-async function updateStatus(id, status) {
+async function updateStatus(id, status, clientOrPool = pool) {
   // UPDATE orders SET status = ? WHERE order_id = ?
-  await pool.query('UPDATE orders SET status = ? WHERE order_id = ?', [status, Number(id)]);
-  return findById(id);
+  await clientOrPool.query('UPDATE orders SET status = ? WHERE order_id = ?', [status, Number(id)]);
+  return findById(id, clientOrPool);
 }
 
-async function cancel(id) {
-  return updateStatus(id, 'Cancelled');
+async function cancel(id, clientOrPool = pool) {
+  return updateStatus(id, 'Cancelled', clientOrPool);
 }
 
 /* ---------------------- Order line items ---------------------- */
 
-async function findDetailsByOrder(orderId) {
+async function findDetailsByOrder(orderId, clientOrPool = pool) {
   // SELECT * FROM order_details WHERE order_id = ?
-  const [rows] = await pool.query('SELECT * FROM order_details WHERE order_id = ?', [Number(orderId)]);
+  const [rows] = await clientOrPool.query('SELECT * FROM order_details WHERE order_id = ?', [Number(orderId)]);
   return rows;
 }
 
-async function addDetail(data) {
+async function findDetailsWithProductsByOrder(orderId, clientOrPool = pool) {
+  // JOIN order_details and products in a single SQL query
+  const [rows] = await clientOrPool.query(
+    `SELECT d.order_detail_id, d.order_id, d.product_id, d.quantity, d.price,
+            p.product_name, p.image, p.sku, p.barcode, p.size, p.color, p.discount
+     FROM order_details d
+     LEFT JOIN products p ON p.product_id = d.product_id
+     WHERE d.order_id = ?`,
+    [Number(orderId)]
+  );
+  return rows.map((r) => ({
+    order_detail_id: r.order_detail_id,
+    order_id: r.order_id,
+    product_id: r.product_id,
+    quantity: r.quantity,
+    price: r.price,
+    product: {
+      product_id: r.product_id,
+      product_name: r.product_name,
+      image: r.image,
+      sku: r.sku,
+      barcode: r.barcode,
+      size: r.size,
+      color: r.color,
+      discount: r.discount,
+      price: r.price,
+    },
+  }));
+}
+
+async function addDetail(data, clientOrPool = pool) {
   // INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (...)
-  const [result] = await pool.query(
+  const [result] = await clientOrPool.query(
     'INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)',
     [Number(data.order_id), Number(data.product_id), Number(data.quantity), Number(data.price)]
   );
-  const [rows] = await pool.query('SELECT * FROM order_details WHERE order_detail_id = ?', [result.insertId]);
+  const [rows] = await clientOrPool.query('SELECT * FROM order_details WHERE order_detail_id = ?', [result.insertId]);
   return rows[0];
 }
 
@@ -92,5 +124,6 @@ module.exports = {
   updateStatus,
   cancel,
   findDetailsByOrder,
+  findDetailsWithProductsByOrder,
   addDetail,
 };

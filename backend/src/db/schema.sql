@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS users (
   reset_token        VARCHAR(190) NULL,
   reset_token_expiry BIGINT       NULL,
   created_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_users_reset_token (reset_token)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------------
@@ -70,7 +71,8 @@ CREATE TABLE IF NOT EXISTS products (
   CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE RESTRICT,
   CONSTRAINT fk_products_brand    FOREIGN KEY (brand_id)    REFERENCES brands(brand_id)    ON DELETE RESTRICT,
   INDEX idx_products_category (category_id),
-  INDEX idx_products_brand (brand_id)
+  INDEX idx_products_brand (brand_id),
+  INDEX idx_products_price (price)
 ) ENGINE=InnoDB;
 
 -- ------------------------------------------------------------------
@@ -84,11 +86,15 @@ CREATE TABLE IF NOT EXISTS orders (
   status     ENUM('Pending','Processing','Shipped','Delivered','Cancelled','Returned','Exchanged','Refunded') NOT NULL DEFAULT 'Pending',
   channel    ENUM('Online','POS') NOT NULL DEFAULT 'Online',
   cashier_id INT NULL, -- staff user_id, set only for POS (channel='POS') sales
+  shipping_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
   shipping_address VARCHAR(255) NULL,
   CONSTRAINT fk_orders_user    FOREIGN KEY (user_id)    REFERENCES users(user_id)    ON DELETE SET NULL,
   CONSTRAINT fk_orders_cashier FOREIGN KEY (cashier_id) REFERENCES users(user_id)    ON DELETE SET NULL,
   INDEX idx_orders_user (user_id),
-  INDEX idx_orders_cashier (cashier_id)
+  INDEX idx_orders_cashier (cashier_id),
+  INDEX idx_orders_date (order_date),
+  INDEX idx_orders_status (status),
+  INDEX idx_orders_pos (cashier_id, channel, order_date)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS order_details (
@@ -194,7 +200,8 @@ CREATE TABLE IF NOT EXISTS reviews (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_reviews_user    FOREIGN KEY (user_id)    REFERENCES users(user_id)    ON DELETE CASCADE,
   CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE,
-  INDEX idx_reviews_product (product_id)
+  INDEX idx_reviews_product (product_id),
+  INDEX idx_reviews_product_date (product_id, created_at)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS contact_messages (
@@ -204,4 +211,19 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   subject    VARCHAR(200) NULL,
   message    TEXT NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- ------------------------------------------------------------------
+-- shipping_zones (Distance-based delivery rates managed by Admin)
+-- ------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS shipping_zones (
+  zone_id             INT AUTO_INCREMENT PRIMARY KEY,
+  zone_name           VARCHAR(120) NOT NULL,
+  min_distance_km     DECIMAL(6,2) NOT NULL DEFAULT 0,
+  max_distance_km     DECIMAL(6,2) NULL, -- NULL = upwards
+  rate                DECIMAL(10,2) NOT NULL DEFAULT 0,
+  estimated_delivery  VARCHAR(120) NULL,
+  is_active           TINYINT(1) NOT NULL DEFAULT 1,
+  created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

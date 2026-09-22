@@ -11,7 +11,7 @@ async function run() {
     for (const table of [
       'held_order_items', 'held_orders', 'returns', 'payments', 'order_details',
       'orders', 'reviews', 'wishlists', 'cart_items', 'contact_messages',
-      'products', 'brands', 'categories', 'users',
+      'products', 'brands', 'categories', 'users', 'shipping_zones',
     ]) {
       await conn.query(`TRUNCATE TABLE ${table}`);
     }
@@ -43,6 +43,21 @@ async function run() {
         `INSERT INTO users (user_id, name, email, password, role, phone, address)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [u.user_id, u.name, u.email, u.password, u.role, u.phone, u.address]
+      );
+    }
+
+    console.log('[seed] inserting default shipping zones...');
+    const defaultZones = [
+      { name: 'Inner City / Nearby (0 - 5 km)', min: 0, max: 5, rate: 1.50, est: 'Same Day (1-3 hrs)' },
+      { name: 'Suburban Delivery (5 - 15 km)', min: 5, max: 15, rate: 2.50, est: 'Same Day / Next Day' },
+      { name: 'Outskirts / Greater City (15 - 30 km)', min: 15, max: 30, rate: 3.50, est: '1 - 2 Days' },
+      { name: 'Provinces / Long Distance (30+ km)', min: 30, max: null, rate: 5.00, est: '2 - 3 Days' },
+    ];
+    for (const z of defaultZones) {
+      await conn.query(
+        `INSERT INTO shipping_zones (zone_name, min_distance_km, max_distance_km, rate, estimated_delivery)
+         VALUES (?, ?, ?, ?, ?)`,
+        [z.name, z.min, z.max, z.rate, z.est]
       );
     }
 

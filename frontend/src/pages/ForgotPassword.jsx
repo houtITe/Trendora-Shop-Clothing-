@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserTable } from '../services/db.js';
+import { api, ApiRequestError } from '../services/api.js';
 import { useToast } from '../context/ToastContext.jsx';
 import './Auth.css';
-
-const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 export default function ForgotPassword() {
   const { success: toastSuccess, error: toastError } = useToast();
@@ -14,27 +12,25 @@ export default function ForgotPassword() {
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError('');
 
-    // This project has no backend/email server, so instead of sending a
-    // real email we generate a reset token, store it against the account
-    // (if one exists for this email), and show the link directly — the
-    // same UX outcome (a clickable reset link), without an SMTP dependency.
-    const user = UserTable.findByEmail(email.trim());
-    if (user) {
-      const token = `${user.user_id}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-      UserTable.update(user.user_id, { resetToken: token, resetTokenExpiry: Date.now() + RESET_TOKEN_TTL_MS });
-      setResetLink(`/reset-password/${token}`);
+    try {
+      const data = await api.post('/auth/forgot-password', { email: email.trim() });
+      if (data?.resetToken) {
+        setResetLink(`/reset-password/${data.resetToken}`);
+      }
+      setSubmitted(true);
+      toastSuccess('If an account exists for that email, a reset link is ready below.');
+    } catch (err) {
+      const msg = err instanceof ApiRequestError ? err.message : 'Could not process password reset.';
+      setError(msg);
+      toastError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Always show the same success state whether or not the email exists,
-    // so this form can't be used to check which emails are registered.
-    setSubmitted(true);
-    toastSuccess('If an account exists for that email, a reset link is ready below.');
-    setIsSubmitting(false);
   };
 
   const EmailIcon = () => (

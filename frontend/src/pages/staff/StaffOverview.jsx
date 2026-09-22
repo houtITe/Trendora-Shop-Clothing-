@@ -41,7 +41,7 @@ export default function StaffOverview() {
   return (
     <>
       <h2>Staff Dashboard</h2>
-      <p style={{ color: 'var(--tr-gray)', marginBottom: 20 }}>Welcome back, {user.name.split(' ')[0]}.</p>
+      <p style={{ color: 'var(--tr-gray)', marginBottom: 20 }}>Welcome back, {user?.name ? user.name.split(' ')[0] : 'Staff'}.</p>
 
       <div className="tr-admin__stats">
         <div className="tr-admin__stat">

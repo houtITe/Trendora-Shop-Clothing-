@@ -10,9 +10,14 @@ async function getProfile(userId) {
 }
 
 async function updateProfile(userId, changes) {
-  // Password changes must go through /api/auth/change-password (verifies
-  // the current password first) — never accept a raw password here.
-  const { password, ...safeChanges } = changes;
+  // Only allow updating safe profile attributes; prevent privilege escalation (role, walk_in, password, etc.)
+  const allowed = ['name', 'phone', 'address'];
+  const safeChanges = {};
+  for (const key of allowed) {
+    if (changes[key] !== undefined) {
+      safeChanges[key] = changes[key];
+    }
+  }
   const user = await UserRepository.update(userId, safeChanges);
   if (!user) throw ApiError.notFound('User not found.');
   return UserRepository.sanitize(user);

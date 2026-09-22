@@ -136,6 +136,7 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     clearCart,
     loadUserCart,
+    refreshCart,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

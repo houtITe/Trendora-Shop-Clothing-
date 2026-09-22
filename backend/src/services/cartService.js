@@ -4,14 +4,12 @@ const ProductRepository = require('../repositories/ProductRepository');
 
 async function buildCartView(userId) {
   const items = await CartRepository.findByUser(userId);
-  const detailed = await Promise.all(
-    items.map(async (item) => {
-      const product = await ProductRepository.findById(item.product_id);
-      return { ...item, product };
-    })
-  );
-  const subtotal = detailed.reduce((sum, i) => sum + (i.product ? i.product.price * i.quantity : 0), 0);
-  return { items: detailed, subtotal };
+  const subtotal = items.reduce((sum, i) => {
+    if (!i.product) return sum;
+    const unitPrice = Number(i.product.price) * (1 - Number(i.product.discount || 0) / 100);
+    return sum + unitPrice * i.quantity;
+  }, 0);
+  return { items, subtotal: Number(subtotal.toFixed(2)) };
 }
 
 async function getCart(userId) {

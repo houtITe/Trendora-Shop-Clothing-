@@ -37,7 +37,7 @@ export default function StaffOrders() {
     const matchesSearch =
       !search ||
       String(o.order_id).includes(search) ||
-      customer?.name.toLowerCase().includes(search.toLowerCase());
+      (customer?.name && customer.name.toLowerCase().includes(search.toLowerCase()));
     const matchesStatus = status === 'All' || o.status === status;
     const matchesChannel = channel === 'All' || (o.channel || 'Online') === channel;
     return matchesSearch && matchesStatus && matchesChannel;

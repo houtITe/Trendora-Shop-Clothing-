@@ -15,6 +15,7 @@ const router = express.Router();
 
 router.get('/', productController.listProducts);
 router.get('/barcode/:code', productController.getByBarcode); // POS barcode/SKU scan
+router.get('/next-codes', authMiddleware, adminMiddleware, productController.getNextCodes);
 router.get('/:id', idParamValidator, validateRequest, productController.getProduct);
 router.post(
   '/',

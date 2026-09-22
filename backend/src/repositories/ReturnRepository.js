@@ -18,15 +18,15 @@ async function findAll({ offset, limit } = {}) {
   return rows;
 }
 
-async function create(data) {
+async function create(data, clientOrPool = pool) {
   // INSERT INTO returns (order_id, product_id, quantity, type, reason, exchange_product_id, staff_id) VALUES (...)
   const row = { type: 'return', reason: null, exchange_product_id: null, ...data };
-  const [result] = await pool.query(
+  const [result] = await clientOrPool.query(
     `INSERT INTO returns (order_id, product_id, quantity, type, reason, exchange_product_id, staff_id)
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [Number(row.order_id), Number(row.product_id), Number(row.quantity), row.type, row.reason, row.exchange_product_id, Number(row.staff_id)]
   );
-  const [rows] = await pool.query('SELECT * FROM returns WHERE return_id = ?', [result.insertId]);
+  const [rows] = await clientOrPool.query('SELECT * FROM returns WHERE return_id = ?', [result.insertId]);
   return rows[0];
 }
 
