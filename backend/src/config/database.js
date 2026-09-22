@@ -12,26 +12,31 @@ const env = require('./env');
 const path = require('path');
 
 function resolveSslConfig() {
-  if (!env.db.sslCaPath) return undefined;
+  if (env.db.sslCaPath) {
+    const candidatePaths = [
+      env.db.sslCaPath,
+      path.resolve(process.cwd(), env.db.sslCaPath),
+      path.resolve(__dirname, '../../ca.pem'),
+      path.resolve(__dirname, '../../../ca.pem'),
+    ];
 
-  const candidatePaths = [
-    env.db.sslCaPath,
-    path.resolve(process.cwd(), env.db.sslCaPath),
-    path.resolve(__dirname, '../../ca.pem'),
-    path.resolve(__dirname, '../../../ca.pem'),
-  ];
-
-  for (const candidate of candidatePaths) {
-    if (candidate && fs.existsSync(candidate)) {
-      try {
-        return { ca: fs.readFileSync(candidate) };
-      } catch (err) {
-        console.warn(`[db] Could not read CA cert from ${candidate}:`, err.message);
+    for (const candidate of candidatePaths) {
+      if (candidate && fs.existsSync(candidate)) {
+        try {
+          return { ca: fs.readFileSync(candidate) };
+        } catch (err) {
+          console.warn(`[db] Could not read CA cert from ${candidate}:`, err.message);
+        }
       }
     }
+
+    console.warn(`[db] Warning: DB_SSL_CA path "${env.db.sslCaPath}" not found. Connecting without custom CA cert.`);
   }
 
-  console.warn(`[db] Warning: DB_SSL_CA path "${env.db.sslCaPath}" not found. Connecting without custom CA cert.`);
+  if (process.env.DB_SSL === 'true' || env.db?.ssl) {
+    return { minVersion: 'TLSv1.2', rejectUnauthorized: true };
+  }
+
   return undefined;
 }
 

@@ -13,8 +13,8 @@ const QUICK_LINKS = [
 ];
 
 const CONTACT_INFO = {
-  phone: '+885 19 520 629',
-  email: 'hello@trendora.com',
+  phone: '+855 97 000 0000',
+  email: 'test@trendora.com',
   address: 'Russian Federation Blvd (110), Phnom Penh',
 };
 

@@ -15,7 +15,7 @@ const FAQS = [
 // Contact details kept in one place so they can come from an API later.
 const CONTACT_DETAILS = [
   { icon: 'mapPin', title: 'Address', lines: ['Russian Federation Blvd (110),', 'Phnom Penh, Cambodia'] },
-  { icon: 'phone', title: 'Phone', lines: ['+885 19 520 629'] },
+  { icon: 'phone', title: 'Phone', lines: ['+855 97 000 0000'] },
   { icon: 'mail', title: 'Email', lines: ['hello@trendora.com'] },
   { icon: 'clock', title: 'Working hours', lines: ['Mon – Fri: 8:00 AM – 5:00 PM', 'Sat – Sun: 8:00 AM – 6:00 PM'] },
 ];
