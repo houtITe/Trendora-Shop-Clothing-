@@ -8,7 +8,7 @@
  * inserts them into MySQL (see `npm run db:seed`).
  */
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 // Product image paths point at the brand folders under
 // frontend/Image/<Brand>/<file> — served by the frontend, not this API.
@@ -85,9 +85,6 @@ function nextId(rows, key) {
 module.exports = {
   store,
   nextId,
-  // Raw seed arrays — consumed by src/db/seed.js to populate MySQL.
-  // NOTE: repositories no longer read from `store` above; it's kept here
-  // only as the single source of truth for seed data.
   seedCategories,
   seedBrands,
   seedProducts,

@@ -34,7 +34,14 @@ async function request(path, { method = 'GET', body, headers } = {}) {
 
   // 204 No Content or an empty body — nothing to parse.
   const text = await res.text();
-  const payload = text ? JSON.parse(text) : {};
+  let payload = {};
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = { success: false, message: text };
+    }
+  }
 
   if (!res.ok || payload.success === false) {
     const message =
@@ -58,7 +65,14 @@ async function requestForm(path, { method = 'POST', formData } = {}) {
   });
 
   const text = await res.text();
-  const payload = text ? JSON.parse(text) : {};
+  let payload = {};
+  if (text) {
+    try {
+      payload = JSON.parse(text);
+    } catch {
+      payload = { success: false, message: text };
+    }
+  }
 
   if (!res.ok || payload.success === false) {
     const message =
